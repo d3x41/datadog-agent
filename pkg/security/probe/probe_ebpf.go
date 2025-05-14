@@ -241,6 +241,10 @@ func (p *EBPFProbe) selectFentryMode() {
 		p.useFentry = false
 		seclog.Errorf("fentry enabled but not supported, falling back to kprobe mode")
 		return
+	} else if p.kernelVersion.Code != 0 && p.kernelVersion.Code >= kernel.Kernel6_11 {
+		p.useFentry = false
+		seclog.Errorf("fentry disabled on kernels >= 6.11, falling back to kprobe mode")
+		return
 	}
 
 	if !p.kernelVersion.HaveFentrySupportWithStructArgs() {
@@ -2228,7 +2232,7 @@ func (p *EBPFProbe) initManagerOptionsConstants() {
 		},
 		manager.ConstantEditor{
 			Name:  "dns_port",
-			Value: uint64(p.probe.Opts.DNSPort),
+			Value: uint64(utils.HostToNetworkShort(p.probe.Opts.DNSPort)),
 		},
 		manager.ConstantEditor{
 			Name:  "use_ring_buffer",
