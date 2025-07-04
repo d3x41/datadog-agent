@@ -185,7 +185,6 @@ build do
     mkdir "#{install_dir}/embedded/share/system-probe/ebpf/runtime"
     mkdir "#{install_dir}/embedded/share/system-probe/ebpf/co-re"
     mkdir "#{install_dir}/embedded/share/system-probe/ebpf/co-re/btf"
-    mkdir "#{install_dir}/embedded/share/system-probe/java"
 
     arch = `uname -m`.strip
     if arch == "aarch64"
@@ -220,16 +219,6 @@ build do
   if cws_inst_support
     command "dda inv -- -e cws-instrumentation.build #{fips_args}", :env => env
     copy 'bin/cws-instrumentation/cws-instrumentation', "#{install_dir}/embedded/bin"
-  end
-
-  # OTel agent
-  if ot_target?
-    unless windows_target?
-      command "dda inv -- -e otel-agent.build", :env => env
-      copy 'bin/otel-agent/otel-agent', "#{install_dir}/embedded/bin"
-
-      move 'bin/otel-agent/dist/otel-config.yaml', "#{conf_dir}/otel-config.yaml.example"
-    end
   end
 
   # APM Injection agent
@@ -270,6 +259,12 @@ build do
     command 'swiftc -O -swift-version "5" -target "x86_64-apple-macosx10.10" -Xlinker \'-rpath\' -Xlinker \'@executable_path/../Frameworks\' Sources/*.swift -o gui', cwd: systray_build_dir
     copy "#{systray_build_dir}/gui", "#{app_temp_dir}/MacOS/"
     copy "#{systray_build_dir}/agent.png", "#{app_temp_dir}/MacOS/"
+  end
+
+  # APM Hands Off config file
+  if linux_target?
+    command "dda inv -- agent.generate-config --build-type application-monitoring --output-file ./bin/agent/dist/application_monitoring.yaml", :env => env
+    move 'bin/agent/dist/application_monitoring.yaml', "#{conf_dir}/application_monitoring.yaml.example"
   end
 
   # TODO: move this to omnibus-ruby::health-check.rb

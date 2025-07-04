@@ -37,11 +37,13 @@
 '@datadog/debugger': DEBUG
 '@datadog/debugger-go': DEBUG
 '@datadog/database-monitoring': DBMON
+'@datadog/data-streams-monitoring': DSMON
 '@datadog/agent-cspm': SEC
 '@datadog/telemetry-and-analytics': AIT
 '@datadog/apm-trace-storage': APMTS
 '@datadog/asm-go': APPSEC
 '@datadog/agent-delivery': BARX
+'@datadog/agent-build': ABLD
 '@datadog/agent-devx': ACIX
 '@datadog/injection-platform': INPLAT
 '@datadog/agent-processing-and-routing': APR
